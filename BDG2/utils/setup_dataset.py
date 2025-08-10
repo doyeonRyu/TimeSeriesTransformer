@@ -52,7 +52,7 @@ def setup_dataset(year: int, building_name: str):
 
     # 결과 저장
     total_data.to_csv(elec_path + f"/toronto_data_{year}.csv", index=False)
-    print(f"[저장 완료 | Building: {building_name}, Year: {year}]: {elec_path}/toronto_data_{year}.csv")
+    print(f"[저장 완료 | Building: {building_name}, Year: {year}]: {elec_path}/toronto_data_{year}_{building_name}.csv")
     return total_data
 
 # if __name__ == "__main__":
