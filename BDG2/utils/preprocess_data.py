@@ -61,10 +61,10 @@ def load_and_preprocess(filepath, input_window, output_window):
     L = len(df) # 전체 데이터 길이
     train_end = int(L * 0.8) # 80%: train
     val_end   = int(L * 0.9) # 10%: validation, 나머지 10%: test
-
+``
     x_raw = df[cols].values.astype(np.float32)            # [timestamp_idx, elec, temp, rain]
     y_raw = df[[target_col]].values.astype(np.float32)    # [elec]
-`
+
     x_train_raw, x_val_raw, x_test_raw = x_raw[:train_end], x_raw[train_end:val_end], x_raw[val_end:]
     y_train_raw, y_val_raw, y_test_raw = y_raw[:train_end], y_raw[train_end:val_end], y_raw[val_end:]
 
