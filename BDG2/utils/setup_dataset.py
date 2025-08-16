@@ -15,7 +15,7 @@ def setup_dataset(year: int, building_name: str):
     Return values:
         total_data (pd.DataFrame): 병합된 데이터프레임
     """
-    # 토론토 에너지 데이터 불러오기
+    # 1. 토론토 에너지 데이터 불러오기
     elec_path = "C:/Users/ryudo/OneDrive - gachon.ac.kr/AiCE2/석사논문/Transformer/BDG2/data"
     elec = pd.read_csv(elec_path + "/electricity.csv", parse_dates=["timestamp"]) # parse_dates: timestamp 열을 datetime 형식으로 변환
 
@@ -24,23 +24,23 @@ def setup_dataset(year: int, building_name: str):
     elec["year"] = elec["timestamp"].dt.year
     elec["Hour"] = elec["timestamp"].dt.time
 
-    # 연도 필터링
+    # 2. 연도 필터링
     elec = elec[elec["year"] == year].reset_index(drop=True)
 
     # 필요한 열만 선택 후 이름 변경
     elec = elec[["timestamp", "Date/Time", f"{building_name}"]]
     elec.rename(columns={f"{building_name}": "electricity"}, inplace=True)
 
-    # 날씨 데이터 불러오기
+    # 3. 날씨 데이터 불러오기
     weather_path = f"C:/Users/ryudo/OneDrive - gachon.ac.kr/AiCE2/석사논문/Transformer/BDG2/data/toronto_weather/toronto_weather_{year}.csv"
     weather = pd.read_csv(weather_path, parse_dates=["Date/Time"])
     weather = weather[weather["Year"] == year].reset_index(drop=True)
     weather = weather[["Date/Time", "Mean Temp (°C)", "Total Rain (mm)"]]
 
-    # 날짜 열 형식 변환
+    # 3.1 날짜 열 형식 변환
     weather["Date/Time"] = weather["Date/Time"].dt.date
 
-    # 날짜 기준으로 병합
+    # 4. 날짜 기준으로 병합
     total_data = pd.merge(elec, weather, on="Date/Time", how="inner")
 
     # 최종 열 선택
@@ -50,7 +50,7 @@ def setup_dataset(year: int, building_name: str):
     total_data.sort_values("timestamp", inplace=True)
     total_data.reset_index(drop=True, inplace=True)
 
-    # 결과 저장
+    # 5. 결과 저장
     total_data.to_csv(elec_path + f"/toronto_data_{year}.csv", index=False)
     print(f"[저장 완료 | Building: {building_name}, Year: {year}]: {elec_path}/toronto_data_{year}_{building_name}.csv")
     return total_data

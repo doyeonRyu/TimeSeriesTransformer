@@ -4,19 +4,40 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter, MonthLocator
 
 def plot_data_by_month(filepath, building_name, year, X_train, X_val):
-    # 데이터 불러오기
+    """
+    Function: plot_data_by_month
+        1. csv 파일 불러오기
+        2. train/valid/test 경계 인덱스 계산
+        3. 시각화
+            3.1 y축
+            - 왼쪽 y축: electricity (파랑)
+            - 오른쪽 y축: Mean Temp (°C) (빨강), Total Rain (mm) (노랑)
+            3.2 경계선 표시 (---)
+            3.3 x축: month만 표시
+            3.4 나머지 시각화
+        4. 저장
+    Parameters:
+        filepath (str): CSV 파일 경로
+        building_name (str): 건물 이름
+        year (int): 연도
+        X_train (np.ndarray): 학습용 입력 데이터 (경계 인덱스 계산용)
+        X_val (np.ndarray): 검증용 입력 데이터 (경계 인덱스 계산용)
+    Return values:
+        None
+    """
+    # 1. csv 데이터 불러오기
     df = pd.read_csv(filepath)
     df['Date/Time'] = pd.to_datetime(df['Date/Time'])
     df = df.sort_values('Date/Time').reset_index(drop=True)
 
-    # train/valid/test 경계 인덱스 계산
+    # 2. train/valid/test 경계 인덱스 계산
     train_end = X_train.shape[0]
     valid_end = train_end + X_val.shape[0]
 
-    # 시각화
+    # 3. 시각화
     fig, ax1 = plt.subplots(figsize=(14, 6))
 
-    # 왼쪽 y축: electricity (파랑)
+    # 3.1 왼쪽 y축: electricity (파랑)
     elec_line, = ax1.plot(df['Date/Time'], df['electricity'],
                           color='tab:blue', label='Electricity', linewidth=0.8)
     ax1.set_ylabel('Electricity', color='tab:blue')
@@ -29,13 +50,13 @@ def plot_data_by_month(filepath, building_name, year, X_train, X_val):
                           color='tab:orange', label='Total Rain (mm)', linewidth=0.8)
     ax2.set_ylabel('Temperature / Rain', color='tab:red')
 
-    # 경계선 표시 (---)
+    # 3.2 경계선 표시 (---)
     split_line1 = ax1.axvline(df['Date/Time'].iloc[train_end],
                               color='gray', linestyle='--', label='Train/Valid Split', alpha=0.8)
     split_line2 = ax1.axvline(df['Date/Time'].iloc[valid_end],
                               color='black', linestyle='--', label='Valid/Test Split', alpha=0.8)
 
-    # x축 라벨은 month만 표시
+    # 3.3 x축 라벨은 month만 표시
     ax1.xaxis.set_major_locator(MonthLocator(interval=1))
     ax1.xaxis.set_major_formatter(DateFormatter('%m'))
     ax1.set_xlabel('Month')
